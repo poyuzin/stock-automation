@@ -22,8 +22,8 @@ def send(
     text_fallback: str = "",
     attachments: list[Path] | None = None,
 ) -> bool:
-    host = os.getenv("SMTP_HOST", "smtp.gmail.com")
-    port = int(os.getenv("SMTP_PORT", "465"))
+    host = os.getenv("SMTP_HOST") or "smtp.gmail.com"
+    port = int(os.getenv("SMTP_PORT") or "465")
     user = os.getenv("SMTP_USER")
     password = os.getenv("SMTP_PASS")
     to = os.getenv("MAIL_TO") or user
