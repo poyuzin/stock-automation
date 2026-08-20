@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.DS_Store
+
+# 다운로드 캐시는 커밋하지 않는다 (기록용 data/history 는 커밋한다)
+data/cache/
+data/dashboard-*.html

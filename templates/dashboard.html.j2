@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="{{ '' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }} — {{ generated_kst }}</title>
+<style>
+  :root {
+    color-scheme: light;
+    --plane:#f9f9f7; --surface-1:#fcfcfb;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --track:#e1e0d9; --track-strong:#c3c2b7; --spark-fill:rgba(42,120,214,0.10);
+    --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a; --series-4:#eda100;
+    --series-5:#e87ba4; --series-6:#008300; --series-7:#4a3aa7; --series-8:#e34948;
+    --seq-350:#5598e7; --seq-450:#2a78d6;
+    --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+    --up:#006300; --down:#d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --plane:#0d0d0d; --surface-1:#1a1a19;
+      --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+      --track:#2c2c2a; --track-strong:#4a4a46; --spark-fill:rgba(57,135,229,0.14);
+      --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70; --series-4:#c98500;
+      --series-5:#d55181; --series-6:#008300; --series-7:#9085e9; --series-8:#e66767;
+      --seq-350:#5598e7; --seq-450:#3987e5;
+      --up:#0ca30c; --down:#d03b3b;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --plane:#0d0d0d; --surface-1:#1a1a19;
+    --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+    --track:#2c2c2a; --track-strong:#4a4a46; --spark-fill:rgba(57,135,229,0.14);
+    --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70; --series-4:#c98500;
+    --series-5:#d55181; --series-6:#008300; --series-7:#9085e9; --series-8:#e66767;
+    --seq-350:#5598e7; --seq-450:#3987e5;
+    --up:#0ca30c; --down:#d03b3b;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin:0; padding:28px 20px 64px;
+    background:var(--plane); color:var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+    font-size:14px; line-height:1.5;
+  }
+  .wrap { max-width:1080px; margin:0 auto; }
+  header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:22px; }
+  h1 { font-size:19px; margin:0 0 2px; letter-spacing:-0.01em; }
+  .sub { color:var(--muted); font-size:12.5px; }
+  .theme-btn {
+    background:var(--surface-1); border:1px solid var(--border); color:var(--text-secondary);
+    border-radius:8px; padding:6px 11px; font-size:12.5px; cursor:pointer; font-family:inherit;
+  }
+  .card {
+    background:var(--surface-1); border:1px solid var(--border);
+    border-radius:14px; padding:20px 22px; margin-bottom:16px;
+  }
+  h2 { font-size:12px; text-transform:uppercase; letter-spacing:0.07em;
+       color:var(--muted); margin:0 0 14px; font-weight:600; }
+
+  .hero-val { font-size:48px; font-weight:600; letter-spacing:-0.02em; line-height:1.05; }
+  .hero-row { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:14px; margin-top:20px; }
+  .kpi-l { color:var(--muted); font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em; }
+  .kpi-v { font-size:22px; font-weight:600; margin-top:3px; letter-spacing:-0.01em; }
+
+  .up { color:var(--up); } .down { color:var(--down); }
+  .delta { font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; }
+
+  table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
+  th { text-align:right; font-size:11px; text-transform:uppercase; letter-spacing:0.05em;
+       color:var(--muted); font-weight:600; padding:0 0 9px; border-bottom:1px solid var(--grid); }
+  th:first-child, td:first-child { text-align:left; }
+  td { padding:10px 0; border-bottom:1px solid var(--grid); text-align:right; }
+  tr:last-child td { border-bottom:none; }
+  td.tk { font-weight:600; letter-spacing:0.01em; }
+  .spark, .meter { display:inline-block; vertical-align:middle; }
+  td.c, th.c { text-align:center; }
+  .muted { color:var(--muted); }
+  .sec { color:var(--text-secondary); }
+
+  .alert { display:flex; gap:11px; align-items:flex-start; padding:11px 0; border-bottom:1px solid var(--grid); }
+  .alert:last-child { border-bottom:none; }
+  .dot { width:9px; height:9px; border-radius:50%; margin-top:6px; flex:none; }
+  .badge { font-size:10.5px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+           padding:2px 7px; border-radius:5px; border:1px solid var(--border); color:var(--text-secondary); flex:none; }
+  .s-good .dot{background:var(--good);} .s-warning .dot{background:var(--warning);}
+  .s-serious .dot{background:var(--serious);} .s-critical .dot{background:var(--critical);}
+
+  .legend { display:flex; flex-wrap:wrap; gap:14px; margin-top:12px; }
+  .lg { display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-secondary); }
+  .sw { width:10px; height:10px; border-radius:3px; flex:none; }
+  .wbar { display:flex; gap:2px; height:34px; }
+  .seg { border-radius:4px; display:flex; align-items:center; justify-content:center;
+         color:#fff; font-size:12px; font-weight:600; overflow:hidden; white-space:nowrap;
+         text-shadow:0 1px 2px rgba(0,0,0,.35); }
+  .seg:first-child { border-radius:8px 4px 4px 8px; }
+  .seg:last-child  { border-radius:4px 8px 8px 4px; }
+  .axis { fill:var(--muted); font-size:11px; font-family:system-ui,sans-serif; }
+  .series-label { fill:var(--text-secondary); font-size:12px; font-weight:600; font-family:system-ui,sans-serif; }
+  footer { color:var(--muted); font-size:12px; text-align:center; margin-top:26px; line-height:1.7; }
+  @media (max-width:640px){
+    .hide-sm { display:none; }
+    .hero-val { font-size:38px; }
+    body { padding:18px 12px 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>{{ title }}</h1>
+    <div class="sub">{{ generated_kst }} 기준 · 종가 {{ last_close_date }} · 종목 {{ stats|length }}개</div>
+  </div>
+  <button class="theme-btn" id="tt" type="button">다크 / 라이트</button>
+</header>
+
+{% if portfolio.has_holdings and not public_dashboard %}
+<section class="card">
+  <h2>포트폴리오</h2>
+  <div class="hero-row">
+    <div class="hero-val">${{ '{:,.0f}'.format(portfolio.total) }}</div>
+    <div class="delta {{ 'up' if portfolio.day_pnl >= 0 else 'down' }}">
+      {{ '▲' if portfolio.day_pnl >= 0 else '▼' }}
+      ${{ '{:,.0f}'.format(portfolio.day_pnl|abs) }} ({{ '{:+.2f}'.format(portfolio.day_pct) }}%) 오늘
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div><div class="kpi-l">평가손익</div>
+      <div class="kpi-v {{ 'up' if portfolio.pnl >= 0 else 'down' }}">{{ '{:+,.0f}'.format(portfolio.pnl) }}</div></div>
+    <div><div class="kpi-l">수익률</div>
+      <div class="kpi-v {{ 'up' if portfolio.pnl_pct >= 0 else 'down' }}">{{ '{:+.2f}'.format(portfolio.pnl_pct) }}%</div></div>
+    <div><div class="kpi-l">주식 평가액</div>
+      <div class="kpi-v">${{ '{:,.0f}'.format(portfolio.equity) }}</div></div>
+    <div><div class="kpi-l">현금 비중</div>
+      <div class="kpi-v">{{ '{:.1f}'.format(portfolio.cash_weight) }}%</div></div>
+  </div>
+
+  <div style="margin-top:24px">{{ weight_bar|safe }}</div>
+  <div class="legend">
+    {% for r in portfolio.rows %}
+      <span class="lg"><span class="sw" style="background:var(--series-{{ loop.index0 % 8 + 1 }})"></span>{{ r.ticker }} {{ '{:.1f}'.format(r.weight) }}%</span>
+    {% endfor %}
+    <span class="lg"><span class="sw" style="background:var(--track-strong)"></span>현금 {{ '{:.1f}'.format(portfolio.cash_weight) }}%</span>
+  </div>
+
+  <table style="margin-top:20px">
+    <thead><tr>
+      <th>종목</th><th class="hide-sm">수량</th><th class="hide-sm">평단</th><th>현재가</th>
+      <th>평가액</th><th>수익률</th><th>오늘</th>
+    </tr></thead>
+    <tbody>
+    {% for r in portfolio.rows %}
+      <tr>
+        <td class="tk">{{ r.ticker }}</td>
+        <td class="hide-sm sec">{{ '{:g}'.format(r.shares) }}</td>
+        <td class="hide-sm sec">${{ '{:,.2f}'.format(r.avg_price) }}</td>
+        <td>${{ '{:,.2f}'.format(r.price) }}</td>
+        <td>${{ '{:,.0f}'.format(r.value) }}</td>
+        <td class="{{ 'up' if r.pnl_pct >= 0 else 'down' }}">{{ '{:+.2f}'.format(r.pnl_pct) }}%</td>
+        <td class="{{ 'up' if r.day_pct >= 0 else 'down' }}">{{ '{:+.2f}'.format(r.day_pct) }}%</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>알림 {% if fired %}({{ fired|length }}){% endif %}</h2>
+  {% if fired %}
+    {% for a in fired %}
+      <div class="alert s-{{ a.severity }}">
+        <span class="dot"></span>
+        <span class="badge">{{ a.severity }}</span>
+        <span>{{ a.message }}</span>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="muted">조건에 걸린 종목이 없습니다.</div>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>워치리스트</h2>
+  <table>
+    <thead><tr>
+      <th>종목</th><th>종가</th><th>1일</th><th>5일</th><th class="hide-sm">20일</th>
+      <th class="hide-sm">RSI</th><th class="hide-sm">200일선</th>
+      <th class="c hide-sm" style="width:150px">52주 위치</th>
+      <th class="c" style="width:150px">최근 {{ sparkline_days }}일</th>
+    </tr></thead>
+    <tbody>
+    {% for row in stats %}
+      <tr>
+        <td class="tk">{{ row.ticker }}</td>
+        <td>${{ '{:,.2f}'.format(row.close) }}</td>
+        <td class="{{ 'up' if row.chg_1d >= 0 else 'down' }}">{{ '{:+.2f}'.format(row.chg_1d) }}%</td>
+        <td class="{{ 'up' if row.chg_5d >= 0 else 'down' }}">{{ '{:+.2f}'.format(row.chg_5d) }}%</td>
+        <td class="hide-sm {{ 'up' if row.chg_20d >= 0 else 'down' }}">{{ '{:+.2f}'.format(row.chg_20d) }}%</td>
+        <td class="hide-sm sec">{{ '{:.0f}'.format(row.rsi) }}</td>
+        <td class="hide-sm sec">{{ '위' if row.above_sma200 else '아래' if row.above_sma200 is not none else '—' }}</td>
+        <td class="c hide-sm">{{ row.meter|safe }}</td>
+        <td class="c">{{ row.spark|safe }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  GitHub Actions 로 자동 생성 · 데이터 출처 Yahoo Finance<br>
+  투자 판단의 근거가 아니라 개인 기록용 지표 요약입니다.
+</footer>
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('tt'), root = document.documentElement;
+    try { var s = localStorage.getItem('theme'); if (s) root.setAttribute('data-theme', s); } catch (e) {}
+    btn.addEventListener('click', function () {
+      var dark = root.getAttribute('data-theme') === 'dark'
+        || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var next = dark ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+  })();
+</script>
+</body>
+</html>

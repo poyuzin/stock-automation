@@ -1,0 +1,35 @@
+name: Backtest
+
+# 수동 실행 전용. 전략을 고칠 때마다 Actions 탭에서 돌려 결과를 비교한다.
+on:
+  workflow_dispatch:
+    inputs:
+      charts:
+        description: "상세 차트를 그릴 상위 조합 수"
+        default: "6"
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: 백테스트 실행
+        run: python src/main.py backtest --charts ${{ inputs.charts }}
+
+      # 결과는 아티팩트로만 남긴다 (main 브랜치를 건드리지 않음)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backtest-report
+          path: docs/backtest.html
+          retention-days: 30

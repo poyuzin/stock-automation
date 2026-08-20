@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html><body style="margin:0;padding:0;background:#f4f4f1;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f1;padding:24px 12px;">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border:1px solid #e1e0d9;border-radius:12px;font-family:-apple-system,'Apple SD Gothic Neo','Segoe UI',sans-serif;color:#0b0b0b;">
+
+  <tr><td style="padding:22px 24px 6px;">
+    <div style="font-size:17px;font-weight:600;">{{ title }}</div>
+    <div style="font-size:12.5px;color:#898781;margin-top:3px;">{{ generated_kst }} · 종가 {{ last_close_date }}</div>
+  </td></tr>
+
+  {% if portfolio.has_holdings %}
+  <tr><td style="padding:14px 24px 0;">
+    <div style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#898781;font-weight:600;">포트폴리오</div>
+    <div style="font-size:34px;font-weight:600;letter-spacing:-.02em;margin-top:5px;">${{ '{:,.0f}'.format(portfolio.total) }}</div>
+    <div style="font-size:14px;font-weight:600;color:{{ '#006300' if portfolio.day_pnl >= 0 else '#d03b3b' }};margin-top:2px;">
+      {{ '▲' if portfolio.day_pnl >= 0 else '▼' }} ${{ '{:,.0f}'.format(portfolio.day_pnl|abs) }}
+      ({{ '{:+.2f}'.format(portfolio.day_pct) }}%) 오늘
+      &nbsp;·&nbsp;<span style="color:#52514e;font-weight:400;">누적 {{ '{:+.2f}'.format(portfolio.pnl_pct) }}%</span>
+    </div>
+  </td></tr>
+  {% endif %}
+
+  <tr><td style="padding:20px 24px 0;">
+    <div style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#898781;font-weight:600;margin-bottom:8px;">
+      알림 {{ fired|length }}건
+    </div>
+    {% if fired %}
+      {% for a in fired %}
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-bottom:1px solid #f0efec;">
+        <tr>
+          <td width="10" valign="top" style="padding:9px 0;">
+            <div style="width:8px;height:8px;border-radius:50%;background:{{ sev_color[a.severity] }};margin-top:6px;"></div>
+          </td>
+          <td style="padding:9px 0 9px 10px;font-size:14px;line-height:1.45;">
+            {{ a.message }}
+            <span style="color:#898781;font-size:11.5px;"> · {{ a.severity }}</span>
+          </td>
+        </tr>
+      </table>
+      {% endfor %}
+    {% else %}
+      <div style="font-size:14px;color:#898781;">조건에 걸린 종목이 없습니다.</div>
+    {% endif %}
+  </td></tr>
+
+  <tr><td style="padding:20px 24px 0;">
+    <div style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#898781;font-weight:600;margin-bottom:8px;">워치리스트</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:13.5px;">
+      <tr style="color:#898781;font-size:11px;text-transform:uppercase;letter-spacing:.05em;">
+        <td style="padding-bottom:7px;border-bottom:1px solid #e1e0d9;">종목</td>
+        <td align="right" style="padding-bottom:7px;border-bottom:1px solid #e1e0d9;">종가</td>
+        <td align="right" style="padding-bottom:7px;border-bottom:1px solid #e1e0d9;">1일</td>
+        <td align="right" style="padding-bottom:7px;border-bottom:1px solid #e1e0d9;">5일</td>
+        <td align="right" style="padding-bottom:7px;border-bottom:1px solid #e1e0d9;">RSI</td>
+      </tr>
+      {% for row in stats %}
+      <tr>
+        <td style="padding:8px 0;border-bottom:1px solid #f0efec;font-weight:600;">{{ row.ticker }}</td>
+        <td align="right" style="padding:8px 0;border-bottom:1px solid #f0efec;">${{ '{:,.2f}'.format(row.close) }}</td>
+        <td align="right" style="padding:8px 0;border-bottom:1px solid #f0efec;color:{{ '#006300' if row.chg_1d >= 0 else '#d03b3b' }};">{{ '{:+.2f}'.format(row.chg_1d) }}%</td>
+        <td align="right" style="padding:8px 0;border-bottom:1px solid #f0efec;color:{{ '#006300' if row.chg_5d >= 0 else '#d03b3b' }};">{{ '{:+.2f}'.format(row.chg_5d) }}%</td>
+        <td align="right" style="padding:8px 0;border-bottom:1px solid #f0efec;color:#52514e;">{{ '{:.0f}'.format(row.rsi) }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </td></tr>
+
+  <tr><td style="padding:20px 24px 24px;">
+    {% if dashboard_url %}
+    <a href="{{ dashboard_url }}" style="display:inline-block;background:#2a78d6;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:11px 18px;border-radius:9px;">대시보드 열기</a>
+    {% endif %}
+    <div style="font-size:11.5px;color:#898781;margin-top:16px;line-height:1.6;">
+      GitHub Actions 자동 발송 · 데이터 출처 Yahoo Finance<br>
+      투자 판단의 근거가 아니라 개인 기록용 지표 요약입니다.
+    </div>
+  </td></tr>
+
+</table>
+</td></tr></table>
+</body></html>
